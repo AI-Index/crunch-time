@@ -1,9 +1,10 @@
 import urllib.parse
 import requests
 import time
-from .config import config 
+from .config import config
 api_key = config.api_key
-base_url = "https://api.crunchbase.com/v/3/"
+base_url = "https://api.crunchbase.com/v3.1/"
+
 
 def request_all_pages(url, query_args, extractor, max_pages=None):
     results = []
@@ -11,7 +12,9 @@ def request_all_pages(url, query_args, extractor, max_pages=None):
     while True:
         # Make request and add response to result set 
         try:
+            print("Making request ...")
             response = requests.get(url, params=query_args)
+            print("Got response ...")
             data = response.json()
             results.extend(extractor(data))
         except Exception as e:
@@ -38,6 +41,7 @@ def request_all_pages(url, query_args, extractor, max_pages=None):
 
     return results
 
+
 def fetch_companies(start_page=1, max_pages=None, filters={}):
     if not len(filters):
         filters = {"locations": "United States"}
@@ -58,8 +62,10 @@ def fetch_companies(start_page=1, max_pages=None, filters={}):
     results = request_all_pages(full_url, query_args, company_extractor, max_pages)
     return results
 
+
 def fetch_categories(start_page=1, max_pages=None):
     full_url = urllib.parse.urljoin(base_url, "categories")
+    print(full_url)
     query_args = {"user_key": api_key, "page": str(start_page)}
     def category_extractor(data):
         items = data["data"]["items"]
@@ -70,12 +76,14 @@ def fetch_categories(start_page=1, max_pages=None):
     results = request_all_pages(full_url, query_args, category_extractor, max_pages)
     return results
 
+
 def fetch_company_details(permalink):
     full_url = urllib.parse.urljoin(base_url, "organizations/" + permalink)
     query_args = {"user_key": api_key}
     response = requests.get(full_url, params=query_args)
     data = response.json()
     return data
+
 
 def fetch_company_funding_details(permalink):
     data = fetch_company_details(permalink)
@@ -98,10 +106,6 @@ def fetch_company_funding_details(permalink):
         round_dict.update({"funding_round_type": round_["type"]})
         round_dict.update({k: round_["properties"][k] for k in keys})
         funding_rounds.append(round_dict)
-        # funding_rounds.append(
-        #     {"funding_uuid": round_["uuid"]}
-        #     + {"funding_round_type": round_["type"]}
-        #     + {k: round_["properties"][k] for k in keys})
 
     return funding_rounds
 
@@ -152,12 +156,14 @@ def fetch_company_funding_details(permalink):
 #         }
 #     }
 
+
 def fetch_locations():
     location_dict = {
         "city": set(),
         "country": set(),
         "continent": set()
     }
+
     def location_extractor(data, location_dict=location_dict):
         items = data["data"]["items"]
         for i in items:
