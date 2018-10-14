@@ -5,12 +5,12 @@ CREATE TABLE COMPANY (
     short_description TEXT NOT NULL,
     company_url TEXT,
     company_permalink TEXT NOT NULL UNIQUE,
-    company_crunchbase_creation date NOT NULL
+    company_crunchbase_creation date NOT NULL,
     company_city TEXT,
     company_region TEXT,
-    company_country TEXT
-    -- web_path TEXT,
-    -- api_path TEXT
+    company_country TEXT,
+    company_web_path TEXT,
+    company_api_path TEXT
 
     -- Comes from detail view
     -- company_min_employees INTEGER,

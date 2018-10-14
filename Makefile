@@ -2,6 +2,9 @@ build_db:
 	createdb crunchy
 	psql -d crunchy -a -f startup.sql
 
+add_funding:
+	psql -d crunchy -a -f funding_round.sql
+
 destroy_db:
 	dropdb crunchy
 
